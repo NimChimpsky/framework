@@ -9,7 +9,8 @@ public interface ApplicationContext {
 
     Map<String, Function<String, String>> requestMappingPost();
 
-    default String getPath() {
+    static String getPath() {
         return "/api/v1";
     }
+    static String getContext(){return "context";}
 }

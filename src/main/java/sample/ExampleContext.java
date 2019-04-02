@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class ExampleContext implements ApplicationContext {
-    public static final String CONTEXT = "context";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Gson gson = new Gson();
     private Map<String, Function<String, String>> getControllerMap = new HashMap<>();

@@ -31,9 +31,9 @@ public class Server {
         ApplicationContext applicationContext = new ExampleContext();
         DeploymentInfo servletBuilder = deployment()
                 .setClassLoader(Server.class.getClassLoader())
-                .setContextPath(applicationContext.getPath())
+                .setContextPath(ApplicationContext.getContext())
                 .setDeploymentName("api.war")
-                .addServletContextAttribute(CONTEXT, applicationContext)
+                .addServletContextAttribute(ApplicationContext.getContext(), applicationContext)
                 .addServlets(
                         servlet("sample.RootServlet", RootServlet.class)
                                 .addMapping("/*")
@@ -52,7 +52,7 @@ public class Server {
         Undertow server = Undertow.builder()
                                   .addHttpListener(port, "localhost")
                                   .setHandler(Handlers.path()
-                                                      .addPrefixPath(applicationContext.getPath(), servletHandler)
+                                                      .addPrefixPath(ApplicationContext.getPath(), servletHandler)
                                                       .addExactPath("/", resource(new PathResourceManager(Paths.get("src/main/resources/"), 100))
                                                               .setDirectoryListingEnabled(true)) // resolves index.html
                                                       .addExactPath("/js/ajax.js", resource(new PathResourceManager(Paths

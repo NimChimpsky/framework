@@ -23,7 +23,7 @@ public class RootServlet extends HttpServlet {
     @Override
     public void init() {
         ServletContext servletContext = getServletContext();
-        applicationContext = (ApplicationContext) servletContext.getAttribute(ExampleContext.CONTEXT);
+        applicationContext = (ApplicationContext) servletContext.getAttribute(ApplicationContext.getContext());
 
         requestMapGet = applicationContext.requestMappingGet();
         requestMapPost = applicationContext.requestMappingPost();
@@ -32,7 +32,7 @@ public class RootServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
         String url = httpServletRequest.getRequestURI();
-        String key = url.replace(applicationContext.getPath(), "");
+        String key = url.replace(ApplicationContext.getPath(), "");
         String queryString = httpServletRequest.getQueryString();
         Function<String, String> controller = requestMapGet.get(key);
         String jsonBody = controller.apply(queryString);
