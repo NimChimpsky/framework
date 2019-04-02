@@ -18,7 +18,6 @@ import static io.undertow.servlet.Servlets.*;
 
 public class Server {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
     public static void main(final String[] args) {
