@@ -1,4 +1,8 @@
+package sample;
+
 import config.ApplicationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RootServlet extends HttpServlet {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Function<String, String>> requestMapGet;
     private Map<String, Function<String, String>> requestMapPost;
     private ApplicationContext applicationContext;
@@ -18,7 +23,7 @@ public class RootServlet extends HttpServlet {
     @Override
     public void init() {
         ServletContext servletContext = getServletContext();
-        applicationContext = (ApplicationContext) servletContext.getAttribute(Server.CONTEXT);
+        applicationContext = (ApplicationContext) servletContext.getAttribute(ExampleContext.CONTEXT);
 
         requestMapGet = applicationContext.requestMappingGet();
         requestMapPost = applicationContext.requestMappingPost();
@@ -31,7 +36,6 @@ public class RootServlet extends HttpServlet {
         String queryString = httpServletRequest.getQueryString();
         Function<String, String> controller = requestMapGet.get(key);
         String jsonBody = controller.apply(queryString);
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         response.setStatus(200);

@@ -1,3 +1,5 @@
+package sample;
+
 import com.google.gson.Gson;
 import config.GET;
 import config.POST;

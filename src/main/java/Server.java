@@ -7,6 +7,8 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sample.ExampleContext;
+import sample.RootServlet;
 
 import javax.servlet.ServletException;
 import java.nio.file.Paths;
@@ -16,7 +18,7 @@ import static io.undertow.servlet.Servlets.*;
 
 public class Server {
 
-    public static final String CONTEXT = "context";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
     public static void main(final String[] args) {
@@ -33,7 +35,7 @@ public class Server {
                 .setDeploymentName("api.war")
                 .addServletContextAttribute(CONTEXT, applicationContext)
                 .addServlets(
-                        servlet("RootServlet", RootServlet.class)
+                        servlet("sample.RootServlet", RootServlet.class)
                                 .addMapping("/*")
 
                 );
