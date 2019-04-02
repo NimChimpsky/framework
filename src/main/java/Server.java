@@ -1,6 +1,4 @@
 import config.ApplicationContext;
-import config.GET;
-import config.UrlProcessor;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -10,14 +8,8 @@ import io.undertow.servlet.api.DeploymentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 import javax.servlet.ServletException;
-import java.lang.annotation.Annotation;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 import static io.undertow.Handlers.resource;
 import static io.undertow.servlet.Servlets.*;
@@ -55,36 +47,6 @@ public class Server {
             LOGGER.error("DeploymentManager failed to start, contact support");
             throw new RuntimeException(e);
         }
-        UrlProcessor urlProcessor = new UrlProcessor();
-        Set<TypeElement> annotations = new HashSet<>();
-        annotations.add(GET.class);
-        RoundEnvironment roundEnvironment = new RoundEnvironment() {
-            @Override
-            public boolean processingOver() {
-                return false;
-            }
-
-            @Override
-            public boolean errorRaised() {
-                return false;
-            }
-
-            @Override
-            public Set<? extends Element> getRootElements() {
-                return null;
-            }
-
-            @Override
-            public Set<? extends Element> getElementsAnnotatedWith(TypeElement a) {
-                return null;
-            }
-
-            @Override
-            public Set<? extends Element> getElementsAnnotatedWith(Class<? extends Annotation> a) {
-                return null;
-            }
-        }
-        urlProcessor.process(annotations, roundEnvironment);
         Undertow server = Undertow.builder()
                                   .addHttpListener(port, "localhost")
                                   .setHandler(Handlers.path()
