@@ -1,6 +1,6 @@
 package config;
 
-public interface Factory {
+public interface DependencyProvider {
 
     Object get(Class<?> clazz);
 }

@@ -7,8 +7,9 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sample.ExampleContext;
 import sample.RootServlet;
+import sample.SampleContext;
+import sample.SampleDependencyProvider;
 
 import javax.servlet.ServletException;
 import java.nio.file.Paths;
@@ -27,7 +28,7 @@ public class Server {
         }
 
         LOGGER.info("Starting the webserver on port {} ", port);
-        ApplicationContext applicationContext = new ExampleContext();
+        ApplicationContext applicationContext = new SampleContext(new SampleDependencyProvider());
         DeploymentInfo servletBuilder = deployment()
                 .setClassLoader(Server.class.getClassLoader())
                 .setContextPath(ApplicationContext.getContext())

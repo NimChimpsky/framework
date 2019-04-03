@@ -24,7 +24,6 @@ public class RootServlet extends HttpServlet {
     public void init() {
         ServletContext servletContext = getServletContext();
         applicationContext = (ApplicationContext) servletContext.getAttribute(ApplicationContext.getContext());
-
         requestMapGet = applicationContext.requestMappingGet();
         requestMapPost = applicationContext.requestMappingPost();
     }
