@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public interface ApplicationContext {
 
-    Map<String, Function<String, String>> requestMappingGet();
+    Map<String, Function<Map<String, String>, String>> requestMappingGet();
 
     Map<String, Function<String, String>> requestMappingPost();
 

@@ -10,13 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RootServlet extends HttpServlet {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private Map<String, Function<String, String>> requestMapGet;
+    private Map<String, Function<Map<String, String>, String>> requestMapGet;
     private Map<String, Function<String, String>> requestMapPost;
     private ApplicationContext applicationContext;
 
@@ -32,14 +33,23 @@ public class RootServlet extends HttpServlet {
     protected void doGet(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
         String url = httpServletRequest.getRequestURI();
         String key = url.replace(ApplicationContext.getPath(), "");
-        String queryString = httpServletRequest.getQueryString();
-        Function<String, String> controller = requestMapGet.get(key);
-        String jsonBody = controller.apply(queryString);
+
+        Function<Map<String, String>, String> controller = requestMapGet.get(key);
+        String jsonBody = controller.apply(extractParameterMap(httpServletRequest.getParameterMap()));
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         response.setStatus(200);
         out.write(jsonBody);
         out.close();
+    }
+
+    private Map<String, String> extractParameterMap(Map<String, String[]> parameterMap) {
+        Map<String, String> tidyParameterMap = new HashMap<>(parameterMap.size());
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            tidyParameterMap.put(entry.getKey(), entry.getValue()[0]);
+        }
+        return tidyParameterMap;
+
     }
 
     @Override

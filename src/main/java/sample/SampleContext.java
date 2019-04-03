@@ -3,17 +3,17 @@ package sample;
 import config.ApplicationContext;
 import config.GET;
 import config.DependencyProvider;
+import config.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class SampleContext implements ApplicationContext {
 
@@ -51,13 +51,20 @@ public class SampleContext implements ApplicationContext {
     private Object createAndPopulateDependencies(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         Object component = clazz.newInstance();
         Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
+        List<Field> injectedFields = Arrays.stream(fields).filter(new Predicate<Field>() {
+            @Override
+            public boolean test(Field field) {
+                return field.isAnnotationPresent(Inject.class);
+            }
+        }).collect(Collectors.toList());
+        for (Field field : injectedFields) {
             Object dependency = dependencyProvider.get(field.getType());
             if (dependency != null) {
                 field.setAccessible(true);
                 field.set(component, dependency);
             } else {
-                logger.warn("Unable to find dependency " + field.getName() + " with type " + field.getType() + " in " + clazz.getName());
+                logger.warn("Unable to find dependency " + field.getName() + " with type " + field.getType() + " in " + clazz
+                        .getName());
             }
         }
         return component;
