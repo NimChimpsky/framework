@@ -8,9 +8,9 @@ public class HelloWorldController {
 
     private Gson gson;
 
-
     @GET(url = "/HelloWorld")
     public String get(String s) {
+//        return gson.toJson("as");
         return "hello world";
     }
 
