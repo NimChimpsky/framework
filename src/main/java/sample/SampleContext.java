@@ -2,8 +2,9 @@ package sample;
 
 import config.ApplicationContext;
 import config.DependencyProvider;
-import config.Get;
-import config.Inject;
+import config.annotations.Get;
+import config.annotations.Inject;
+import config.annotations.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ public class SampleContext implements ApplicationContext {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Function<Map<String, String>, String>> getControllerMap = new HashMap<>();
+    private Map<String, Function<String, String>> postControllerMap = new HashMap<>();
     private final DependencyProvider dependencyProvider;
 
     public SampleContext(DependencyProvider dependencyProvider) {
@@ -32,15 +34,26 @@ public class SampleContext implements ApplicationContext {
         for (Class<?> clazz : classesForScanning) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
+
                 if (method.isAnnotationPresent(Get.class)) {
                     Get getRequestMapper = method.getAnnotation(Get.class);
                     String url = getRequestMapper.url();
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
-                        Function<Map<String, String>, String> function = createFunction(method, controller);
+                        Function<Map<String, String>, String> function = createGetFunction(method, controller);
                         getControllerMap.put(url, function);
                     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                        logger.error("Exception scanning getters {}", e);
+                        logger.error("Exception scanning get request mappings {}", e);
+                    }
+                } else if (method.isAnnotationPresent(Post.class)) {
+                    Post postRequestMapper = method.getAnnotation(Post.class);
+                    String url = postRequestMapper.url();
+                    try {
+                        final Object controller = createAndPopulateDependencies(clazz);
+                        Function<String, String> function = createPostFunction(method, controller);
+                        postControllerMap.put(url, function);
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                        logger.error("Exception scanning get request mappings {}", e);
                     }
                 }
             }
@@ -76,17 +89,35 @@ public class SampleContext implements ApplicationContext {
         return component;
     }
 
-    private Function<Map<String, String>, String> createFunction(Method method, Object controller) {
+    private Function<Map<String, String>, String> createGetFunction(Method method, Object controller) {
         return new Function<Map<String, String>, String>() {
             @Override
             public String apply(Map<String, String> parameters) {
                 try {
                     return (String) method.invoke(controller, parameters);
                 } catch (IllegalAccessException e) {
-                    logger.error("IllegalAccessException processing get request {}", e);
+                    logger.error("IllegalAccessException processing get request mapping {}", e);
                     return e.getMessage();
                 } catch (InvocationTargetException e) {
-                    logger.error("InvocationTargetException processing get request {}", e);
+                    logger.error("InvocationTargetException processing get request mapping{}", e);
+                    return e.getMessage();
+                }
+
+            }
+        };
+    }
+
+    private Function<String, String> createPostFunction(Method method, Object controller) {
+        return new Function<String, String>() {
+            @Override
+            public String apply(String requestBody) {
+                try {
+                    return (String) method.invoke(controller, requestBody);
+                } catch (IllegalAccessException e) {
+                    logger.error("IllegalAccessException processing post request mapping {}", e);
+                    return e.getMessage();
+                } catch (InvocationTargetException e) {
+                    logger.error("InvocationTargetException processing post request mapping {}", e);
                     return e.getMessage();
                 }
 

@@ -17,16 +17,20 @@ import java.util.stream.Collectors;
 
 public class RootServlet extends HttpServlet {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private Map<String, Function<Map<String, String>, String>> requestMapGet;
-    private Map<String, Function<String, String>> requestMapPost;
+    private Map<String, Function<Map<String, String>, String>> requestMappingsGet;
+    private Map<String, Function<Map<String, String>, String>> requestMappingsDelete;
+    private Map<String, Function<String, String>> requestMappingsPost;
+    private Map<String, Function<String, String>> requestMappingsPut;
     private ApplicationContext applicationContext;
 
     @Override
     public void init() {
         ServletContext servletContext = getServletContext();
         applicationContext = (ApplicationContext) servletContext.getAttribute(ApplicationContext.getContext());
-        requestMapGet = applicationContext.requestMappingGet();
-        requestMapPost = applicationContext.requestMappingPost();
+        requestMappingsGet = applicationContext.requestMappingGet();
+        requestMappingsPost = applicationContext.requestMappingPost();
+        requestMappingsPut = applicationContext.requestMappingPut();
+        requestMappingsDelete = applicationContext.requestMappingDelete();
     }
 
     @Override
@@ -34,7 +38,7 @@ public class RootServlet extends HttpServlet {
         String url = httpServletRequest.getRequestURI();
         String key = url.replace(ApplicationContext.getPath(), "");
 
-        Function<Map<String, String>, String> controller = requestMapGet.get(key);
+        Function<Map<String, String>, String> controller = requestMappingsGet.get(key);
         String jsonBody = controller.apply(extractParameterMap(httpServletRequest.getParameterMap()));
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
@@ -42,6 +46,21 @@ public class RootServlet extends HttpServlet {
         out.write(jsonBody);
         out.close();
     }
+
+    @Override
+    protected void doDelete(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
+        String url = httpServletRequest.getRequestURI();
+        String key = url.replace(ApplicationContext.getPath(), "");
+
+        Function<Map<String, String>, String> controller = requestMappingsDelete.get(key);
+        String jsonBody = controller.apply(extractParameterMap(httpServletRequest.getParameterMap()));
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        response.setStatus(200);
+        out.write(jsonBody);
+        out.close();
+    }
+
 
     private Map<String, String> extractParameterMap(Map<String, String[]> parameterMap) {
         Map<String, String> tidyParameterMap = new HashMap<>(parameterMap.size());
@@ -57,7 +76,22 @@ public class RootServlet extends HttpServlet {
         String url = httpServletRequest.getRequestURI();
         String requestBody = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 
-        Function<String, String> controller = requestMapPost.get(url);
+        Function<String, String> controller = requestMappingsPost.get(url);
+        String jsonBody = controller.apply(requestBody);
+
+        response.setContentType("application/json");
+        response.setStatus(200);
+        PrintWriter out = response.getWriter();
+        out.write(jsonBody);
+        out.close();
+    }
+
+    @Override
+    protected void doPut(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
+        String url = httpServletRequest.getRequestURI();
+        String requestBody = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+
+        Function<String, String> controller = requestMappingsPut.get(url);
         String jsonBody = controller.apply(requestBody);
 
         response.setContentType("application/json");

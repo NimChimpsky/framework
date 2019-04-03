@@ -13,4 +13,8 @@ public interface ApplicationContext {
         return "/api/v1";
     }
     static String getContext(){return "context";}
+
+    Map<String, Function<String, String>> requestMappingPut();
+
+    Map<String, Function<Map<String, String>, String>> requestMappingDelete();
 }
