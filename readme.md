@@ -1,3 +1,15 @@
-Serving json in a fat jar under 4mb.
+Serving json in a fat jar under 4mb (this includes sl4j, undertow webserver and gson)
 
-Built with with undertow, gson and custom annotations.
+Background
+Starting a startup couldn't find an existing library I liked.
+ 
+Spring is at least 16mb and I couldn't easily see what it was including. I know it uses jackson, I prefer gson.
+ 
+Jersey, is 20+ jars, 5mb+. 
+ 
+Resteasy, I stopped downloading the zip when it got to 13mb.
+ 
+THen I realized I only needed 5 annotations and constructor injection - so here we are.
+ 
+ 
+ 
