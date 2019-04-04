@@ -22,6 +22,7 @@ public class HelloWorldController {
 
 
     // method signature must not change for request types
+    // get request take a map of string string, extracted from url  query string
     @Get(url = "/HelloWorld")
     public String get(Map<String, String> parameters) {
         Person person = new Person(parameters.get("name"), Integer.parseInt(parameters.get("age")));

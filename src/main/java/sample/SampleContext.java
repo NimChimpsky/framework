@@ -20,7 +20,9 @@ public class SampleContext implements ApplicationContext {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Function<Map<String, String>, String>> getControllerMap = new HashMap<>();
+    private Map<String, Function<Map<String, String>, String>> deleteControllerMap = new HashMap<>();
     private Map<String, Function<String, String>> postControllerMap = new HashMap<>();
+    private Map<String, Function<String, String>> putControllerMap = new HashMap<>();
     private final DependencyProvider dependencyProvider;
 
     public SampleContext(DependencyProvider dependencyProvider) {
@@ -132,6 +134,16 @@ public class SampleContext implements ApplicationContext {
 
     @Override
     public Map<String, Function<String, String>> requestMappingPost() {
-        return null;
+        return postControllerMap;
+    }
+
+    @Override
+    public Map<String, Function<String, String>> requestMappingPut() {
+        return putControllerMap;
+    }
+
+    @Override
+    public Map<String, Function<Map<String, String>, String>> requestMappingDelete() {
+        return deleteControllerMap;
     }
 }

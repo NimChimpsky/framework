@@ -75,8 +75,8 @@ public class RootServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
         String url = httpServletRequest.getRequestURI();
         String requestBody = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-
-        Function<String, String> controller = requestMappingsPost.get(url);
+        String key = url.replace(ApplicationContext.getPath(), "");
+        Function<String, String> controller = requestMappingsPost.get(key);
         String jsonBody = controller.apply(requestBody);
 
         response.setContentType("application/json");
