@@ -3,13 +3,17 @@ Serving json in a fat jar under 4mb (this includes sl4j, undertow webserver and 
 Background
 Starting a startup couldn't find an existing library I liked.
  
-Spring is at least 16mb and I couldn't easily see what it was including. I know it uses jackson, I prefer gson.
+Spring is at least 16mb and I couldn't easily see what it was including. and it uses jackson, I prefer gson.
  
 Jersey, is 20+ jars, 5mb+. 
  
-Resteasy, I stopped downloading the zip when it got to 13mb.
+Resteasy, ~45mb.
  
-THen I realized I only needed 5 annotations and constructor injection - so here we are.
+Then I realized I only needed 5 annotations and constructor injection - so here we are.
+
+A configured project serving json (no xml) and static resources.
+
+
  
  
  

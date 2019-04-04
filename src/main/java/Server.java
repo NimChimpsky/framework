@@ -51,32 +51,20 @@ public class Server {
         }
         Undertow server = Undertow.builder()
                                   .addHttpListener(port, "localhost")
-                                  .setHandler(Handlers.path()
-                                                      .addPrefixPath(ApplicationContext.getPath(), servletHandler)
-                                                      .addExactPath("/", resource(new PathResourceManager(Paths.get("src/main/resources/"), 100))
-                                                              .setDirectoryListingEnabled(true)) // resolves index.html
-                                                      .addExactPath("/js/ajax.js", resource(new PathResourceManager(Paths
-                                                              .get("src/main/resources/js/ajax.js"), 100))
-                                                              .setDirectoryListingEnabled(true))
-                                                      .addExactPath("/js/frappe.js", resource(new PathResourceManager(Paths
-                                                              .get("src/main/resources/js/frappe.js"), 100))
-                                                              .setDirectoryListingEnabled(true))
-                                                      .addExactPath("/js/metriculous.js", resource(new PathResourceManager(Paths
-                                                              .get("src/main/resources/js/metriculous.js"), 100))
-                                                              .setDirectoryListingEnabled(true))
-                                                      .addExactPath("/js/file/file.js", resource(new PathResourceManager(Paths
-                                                              .get("src/main/resources/js/file/file.js"), 100))
-                                                              .setDirectoryListingEnabled(true))
-                                                      .addExactPath("/js/person/person.js", resource(new PathResourceManager(Paths
-                                                              .get("src/main/resources/js/person/person.js"), 100))
-                                                              .setDirectoryListingEnabled(true))
-                                                      .addExactPath("/css/metriculous.css", resource(new PathResourceManager(Paths
-                                                              .get("src/main/resources/css/metriculous.css"), 100))
-                                                              .setDirectoryListingEnabled(true)))
+                                  .setHandler(createHandler(servletHandler))
                                   //.setHandler(servletHandler)
                                   .build();
         server.start();
 
+
+    }
+
+    private static HttpHandler createHandler(HttpHandler servletHandler) {
+        return Handlers.path()
+                       .addExactPath("/", resource(new PathResourceManager(Paths.get("src/main/resources/Index.html"), 100))
+                               .setDirectoryListingEnabled(false)) // resolves index.html
+                       .addPrefixPath(ApplicationContext.getPath(), servletHandler)
+                       .addPrefixPath("/static", resource(new PathResourceManager(Paths.get("src/main/resources/"))));
 
     }
 
