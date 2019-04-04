@@ -9,5 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Get {
 
-    String url();
+    String value();
+
+
+
 }

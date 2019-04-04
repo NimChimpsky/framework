@@ -9,13 +9,12 @@ import config.annotations.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 public class SampleContext implements ApplicationContext {
@@ -29,19 +28,22 @@ public class SampleContext implements ApplicationContext {
 
     public SampleContext(DependencyProvider dependencyProvider) {
         this.dependencyProvider = dependencyProvider;
-        Set<Class<?>> clazzes = new HashSet<>(1);
-        clazzes.add(HelloWorldController.class);
-        findMappings(clazzes);
+        try {
+            Class[] clazzes = ApplicationContext.getControllers("sample");
+            findMappings(clazzes);
+        } catch (ClassNotFoundException | IOException e) {
+            logger.error("Error scanning classes", e);
+        }
+
     }
 
-    public void findMappings(Set<Class<?>> classesForScanning) {
+    public void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-
                 if (method.isAnnotationPresent(Get.class)) {
                     Get getRequestMapper = method.getAnnotation(Get.class);
-                    String url = getRequestMapper.url();
+                    String url = getRequestMapper.value();
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
                         Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
@@ -51,7 +53,7 @@ public class SampleContext implements ApplicationContext {
                     }
                 } else if (method.isAnnotationPresent(Post.class)) {
                     Post postRequestMapper = method.getAnnotation(Post.class);
-                    String url = postRequestMapper.url();
+                    String url = postRequestMapper.value();
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
                         Function<String, String> function = createRequestBodyFunction(method, controller);
@@ -61,7 +63,7 @@ public class SampleContext implements ApplicationContext {
                     }
                 } else if (method.isAnnotationPresent(Delete.class)) {
                     Delete deleteRequestMapper = method.getAnnotation(Delete.class);
-                    String url = deleteRequestMapper.url();
+                    String url = deleteRequestMapper.value();
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
                         Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
@@ -71,7 +73,7 @@ public class SampleContext implements ApplicationContext {
                     }
                 } else if (method.isAnnotationPresent(Put.class)) {
                     Put putRequestMapper = method.getAnnotation(Put.class);
-                    String url = putRequestMapper.url();
+                    String url = putRequestMapper.value();
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
                         Function<String, String> function = createRequestBodyFunction(method, controller);
@@ -80,7 +82,7 @@ public class SampleContext implements ApplicationContext {
                         logger.error("Exception scanning put request mappings {}", e);
                     }
                 } else {
-                    // fuck patch
+                    // fuck patch,and fuck making it anymore oo, there are only four options
                 }
             }
         }
