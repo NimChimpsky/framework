@@ -51,7 +51,6 @@ public class RootServlet extends HttpServlet {
     protected void doDelete(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
         String url = httpServletRequest.getRequestURI();
         String key = url.replace(ApplicationContext.getPath(), "");
-
         Function<Map<String, String>, String> controller = requestMappingsDelete.get(key);
         String jsonBody = controller.apply(extractParameterMap(httpServletRequest.getParameterMap()));
         response.setContentType("application/json");
@@ -90,10 +89,9 @@ public class RootServlet extends HttpServlet {
     protected void doPut(final HttpServletRequest httpServletRequest, final HttpServletResponse response) throws IOException {
         String url = httpServletRequest.getRequestURI();
         String requestBody = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-
-        Function<String, String> controller = requestMappingsPut.get(url);
+        String key = url.replace(ApplicationContext.getPath(), "");
+        Function<String, String> controller = requestMappingsPut.get(key);
         String jsonBody = controller.apply(requestBody);
-
         response.setContentType("application/json");
         response.setStatus(200);
         PrintWriter out = response.getWriter();
