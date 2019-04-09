@@ -27,7 +27,9 @@ I only need 5 annotations and constructor injection - so here we are :
 - Constructor injection based on type. 
 - Configured fat jar and embedded webserver.
 - Logging and json serialization. 
-- **Nothing else whatsoever**.
+- **Nothing else what-so-ever**.
+
+`https://twitter.com/@Stephen_Batty`
 
 
  
