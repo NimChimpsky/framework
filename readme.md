@@ -13,9 +13,9 @@ A static js frontend is served that accesses a json api.  The api is defined usi
 
 **Background**
 
-Building an app/service and couldn't find an existing library I liked.
+Building an app that requires a rest-api and web front end and I could not find an existing library that I liked.
  
-Spring is at least 16mb and not simple to see what is included (although I think it uses jackson, I prefer gson).
+Spring is at least 16mb, it is not simple to see what is included.
 
 Jersey, is 20+ jars, 5mb+. 
  
