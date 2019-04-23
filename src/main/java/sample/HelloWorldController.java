@@ -38,7 +38,7 @@ public class HelloWorldController {
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             logger.info("key {}, val {}", entry.getKey(), entry.getValue());
         }
-        logger.info("jsonBody {}, val {}", jsonBody);
+        logger.info("jsonBody {} ", jsonBody);
         return "posted hello world";
     }
 
