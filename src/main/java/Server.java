@@ -1,4 +1,5 @@
 import config.ApplicationContext;
+import config.RootServlet;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -7,7 +8,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sample.RootServlet;
 import sample.SampleContext;
 import sample.SampleDependencyProvider;
 
@@ -35,7 +35,7 @@ public class Server {
                 .setDeploymentName("api.war")
                 .addServletContextAttribute(ApplicationContext.getContext(), applicationContext)
                 .addServlets(
-                        servlet("sample.RootServlet", RootServlet.class)
+                        servlet("config.RootServlet", RootServlet.class)
                                 .addMapping("/*")
 
                 );
