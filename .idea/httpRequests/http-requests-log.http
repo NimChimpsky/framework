@@ -1,0 +1,70 @@
+POST http://localhost:8080/api/v1/HelloWorld?name=stephen&age=12
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T013538.200.json
+
+###
+
+POST http://localhost:8080/api/v1/HelloWorld?name=stephen&age=12
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T013448.500.html
+
+###
+
+POST http://localhost:8080/api/v1/HelloWorld?name=stephen&age=12
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T013349.500.html
+
+###
+
+POST http://localhost:8080/api/v1/HelloWorld?name=stephen&age=12
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T013247.500.html
+
+###
+
+POST http://localhost:8080/api/v1/HelloWorld?name=stephen&age=12
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T012405.500.html
+
+###
+
+GET http://localhost:8080/api/v1/HelloWorld?name=stephen&age=12
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T012358.200.json
+
+###
+
+GET http://localhost:8080/api/v1/HelloWorld
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T012253.200.json
+
+###
+
+GET http://localhost:8080/api/v1/HelloWorld
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-04-23T012245.200.json
+
+###
+
+GET http://localhost:8080/sdfd
+Accept: */*
+Cache-Control: no-cache
+
+###
+
