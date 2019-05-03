@@ -25,18 +25,25 @@ public class HelloWorldController {
     // get request take a map of string string, extracted from url  query string
     @Get("/HelloWorld")
     public String get(Map<String, String> parameters) {
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            logger.info("key {}, val {}", entry.getKey(), entry.getValue());
+        }
         Person person = new Person(parameters.get("name"), Integer.parseInt(parameters.get("age")));
         return gson.toJson(person);
     }
 
     // method name irrelevant
     @Post("/HelloWorld")
-    public String postalicious(String s) {
+    public String postalicious(Map<String, String> parameters, String jsonBody) {
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            logger.info("key {}, val {}", entry.getKey(), entry.getValue());
+        }
+        logger.info("jsonBody {} ", jsonBody);
         return "posted hello world";
     }
 
     @Put("/HelloWorld")
-    public String put(String s) {
+    public String put(Map<String, String> parameters, String jsonBody) {
         return "put hello world";
     }
 

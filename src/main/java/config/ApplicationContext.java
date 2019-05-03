@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static config.ClassPathScannerHelper.findClasses;
@@ -15,14 +16,14 @@ public interface ApplicationContext {
 
     Map<String, Function<Map<String, String>, String>> requestMappingGet();
 
-    Map<String, Function<String, String>> requestMappingPost();
+    Map<String, BiFunction<Map<String, String>, String, String>> requestMappingPost();
 
     static String getPath() {
         return "/api/v1";
     }
     static String getContext(){return "context";}
 
-    Map<String, Function<String, String>> requestMappingPut();
+    Map<String, BiFunction<Map<String, String>, String, String>> requestMappingPut();
 
     Map<String, Function<Map<String, String>, String>> requestMappingDelete();
 

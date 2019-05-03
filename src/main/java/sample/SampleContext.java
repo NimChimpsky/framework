@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class SampleContext implements ApplicationContext {
@@ -22,8 +23,8 @@ public class SampleContext implements ApplicationContext {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Function<Map<String, String>, String>> getControllerMap = new HashMap<>();
     private Map<String, Function<Map<String, String>, String>> deleteControllerMap = new HashMap<>();
-    private Map<String, Function<String, String>> postControllerMap = new HashMap<>();
-    private Map<String, Function<String, String>> putControllerMap = new HashMap<>();
+    private Map<String, BiFunction<Map<String, String>, String, String>> postControllerMap = new HashMap<>();
+    private Map<String, BiFunction<Map<String, String>, String, String>> putControllerMap = new HashMap<>();
     private final DependencyProvider dependencyProvider;
 
     public SampleContext(DependencyProvider dependencyProvider) {
@@ -56,8 +57,18 @@ public class SampleContext implements ApplicationContext {
                     String url = postRequestMapper.value();
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
-                        Function<String, String> function = createRequestBodyFunction(method, controller);
+                        BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
                         postControllerMap.put(url, function);
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                        logger.error("Exception scanning post request mappings {}", e);
+                    }
+                } else if (method.isAnnotationPresent(Put.class)) {
+                    Put postRequestMapper = method.getAnnotation(Put.class);
+                    String url = postRequestMapper.value();
+                    try {
+                        final Object controller = createAndPopulateDependencies(clazz);
+                        BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
+                        putControllerMap.put(url, function);
                     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         logger.error("Exception scanning post request mappings {}", e);
                     }
@@ -71,18 +82,6 @@ public class SampleContext implements ApplicationContext {
                     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         logger.error("Exception scanning delete request mappings {}", e);
                     }
-                } else if (method.isAnnotationPresent(Put.class)) {
-                    Put putRequestMapper = method.getAnnotation(Put.class);
-                    String url = putRequestMapper.value();
-                    try {
-                        final Object controller = createAndPopulateDependencies(clazz);
-                        Function<String, String> function = createRequestBodyFunction(method, controller);
-                        putControllerMap.put(url, function);
-                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                        logger.error("Exception scanning put request mappings {}", e);
-                    }
-                } else {
-                    // fuck patch,and fuck making it anymore oo, there are only four options
                 }
             }
         }
@@ -135,12 +134,12 @@ public class SampleContext implements ApplicationContext {
         };
     }
 
-    private Function<String, String> createRequestBodyFunction(Method method, Object controller) {
-        return new Function<String, String>() {
+    private BiFunction<Map<String, String>, String, String> createRequestBodyFunction(Method method, Object controller) {
+        return new BiFunction<Map<String, String>, String, String>() {
             @Override
-            public String apply(String requestBody) {
+            public String apply(Map<String, String> parameterMap, String requestBody) {
                 try {
-                    return (String) method.invoke(controller, requestBody);
+                    return (String) method.invoke(controller, parameterMap, requestBody);
                 } catch (IllegalAccessException e) {
                     logger.error("IllegalAccessException processing post request mapping {}", e);
                     return e.getMessage();
@@ -159,12 +158,12 @@ public class SampleContext implements ApplicationContext {
     }
 
     @Override
-    public Map<String, Function<String, String>> requestMappingPost() {
+    public Map<String, BiFunction<Map<String, String>, String, String>> requestMappingPost() {
         return postControllerMap;
     }
 
     @Override
-    public Map<String, Function<String, String>> requestMappingPut() {
+    public Map<String, BiFunction<Map<String, String>, String, String>> requestMappingPut() {
         return putControllerMap;
     }
 
