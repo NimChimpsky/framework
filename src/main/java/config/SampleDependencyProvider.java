@@ -1,7 +1,6 @@
-package sample;
+package config;
 
 import com.google.gson.Gson;
-import config.DependencyProvider;
 
 import java.util.HashMap;
 import java.util.Map;

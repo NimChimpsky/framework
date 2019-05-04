@@ -1,5 +1,6 @@
-import config.ApplicationContext;
+import config.Context;
 import config.RootServlet;
+import config.SampleDependencyProvider;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -8,8 +9,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sample.SampleContext;
-import sample.SampleDependencyProvider;
 
 import javax.servlet.ServletException;
 import java.nio.file.Paths;
@@ -28,12 +27,12 @@ public class Server {
         }
 
         LOGGER.info("Starting the webserver on port {} ", port);
-        ApplicationContext applicationContext = new SampleContext(new SampleDependencyProvider());
+        Context context = new Context(new SampleDependencyProvider());
         DeploymentInfo servletBuilder = deployment()
                 .setClassLoader(Server.class.getClassLoader())
-                .setContextPath(ApplicationContext.getContext())
+                .setContextPath(Context.getContext())
                 .setDeploymentName("api.war")
-                .addServletContextAttribute(ApplicationContext.getContext(), applicationContext)
+                .addServletContextAttribute(Context.getContext(), context)
                 .addServlets(
                         servlet("config.RootServlet", RootServlet.class)
                                 .addMapping("/*")
@@ -63,7 +62,7 @@ public class Server {
         return Handlers.path()
                        .addExactPath("/", resource(new PathResourceManager(Paths.get("src/main/resources/Index.html"), 100))
                                .setDirectoryListingEnabled(false)) // resolves index.html
-                       .addPrefixPath(ApplicationContext.getPath(), servletHandler)
+                       .addPrefixPath(Context.getPath(), servletHandler)
                        .addPrefixPath("/static", resource(new PathResourceManager(Paths.get("src/main/resources/"))));
 
     }

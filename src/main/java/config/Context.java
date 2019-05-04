@@ -1,7 +1,6 @@
-package sample;
+package config;
 
-import config.ApplicationContext;
-import config.DependencyProvider;
+
 import config.annotations.Delete;
 import config.annotations.Get;
 import config.annotations.Post;
@@ -16,9 +15,10 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
-public class SampleContext implements ApplicationContext {
+public class Context {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Function<Map<String, String>, String>> getControllerMap = new HashMap<>();
@@ -27,10 +27,10 @@ public class SampleContext implements ApplicationContext {
     private Map<String, BiFunction<Map<String, String>, String, String>> putControllerMap = new HashMap<>();
     private final DependencyProvider dependencyProvider;
 
-    public SampleContext(DependencyProvider dependencyProvider) {
+    public Context(DependencyProvider dependencyProvider) {
         this.dependencyProvider = dependencyProvider;
         try {
-            Class[] clazzes = ApplicationContext.getControllers("sample");
+            Class[] clazzes = ClassPathScannerHelper.getControllers("au.com.metriculous.api");
             findMappings(clazzes);
         } catch (ClassNotFoundException | IOException e) {
             logger.error("Error scanning classes", e);
@@ -38,6 +38,13 @@ public class SampleContext implements ApplicationContext {
 
     }
 
+    public static String getPath() {
+        return "/api/v1";
+    }
+
+    public static String getContext() {
+        return "context";
+    }
     public void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
             Method[] methods = clazz.getDeclaredMethods();
@@ -62,16 +69,6 @@ public class SampleContext implements ApplicationContext {
                     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         logger.error("Exception scanning post request mappings {}", e);
                     }
-                } else if (method.isAnnotationPresent(Put.class)) {
-                    Put postRequestMapper = method.getAnnotation(Put.class);
-                    String url = postRequestMapper.value();
-                    try {
-                        final Object controller = createAndPopulateDependencies(clazz);
-                        BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
-                        putControllerMap.put(url, function);
-                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                        logger.error("Exception scanning post request mappings {}", e);
-                    }
                 } else if (method.isAnnotationPresent(Delete.class)) {
                     Delete deleteRequestMapper = method.getAnnotation(Delete.class);
                     String url = deleteRequestMapper.value();
@@ -82,6 +79,18 @@ public class SampleContext implements ApplicationContext {
                     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         logger.error("Exception scanning delete request mappings {}", e);
                     }
+                } else if (method.isAnnotationPresent(Put.class)) {
+                    Put putRequestMapper = method.getAnnotation(Put.class);
+                    String url = putRequestMapper.value();
+                    try {
+                        final Object controller = createAndPopulateDependencies(clazz);
+                        BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
+                        putControllerMap.put(url, function);
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                        logger.error("Exception scanning put request mappings {}", e);
+                    }
+                } else {
+                    // fuck patch,and fuck making it anymore oo, there are only four options
                 }
             }
         }
@@ -122,29 +131,27 @@ public class SampleContext implements ApplicationContext {
             public String apply(Map<String, String> parameters) {
                 try {
                     return (String) method.invoke(controller, parameters);
-                } catch (IllegalAccessException e) {
-                    logger.error("IllegalAccessException processing get request mapping {}", e);
-                    return e.getMessage();
-                } catch (InvocationTargetException e) {
-                    logger.error("InvocationTargetException processing get request mapping{}", e);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    logger.error("Exception processing get request mapping {}", e);
+                    logger.error("parameters {}", mapToCsv(parameters));
                     return e.getMessage();
                 }
 
             }
         };
     }
+
 
     private BiFunction<Map<String, String>, String, String> createRequestBodyFunction(Method method, Object controller) {
         return new BiFunction<Map<String, String>, String, String>() {
             @Override
-            public String apply(Map<String, String> parameterMap, String requestBody) {
+            public String apply(Map<String, String> parameters, String requestBody) {
                 try {
-                    return (String) method.invoke(controller, parameterMap, requestBody);
-                } catch (IllegalAccessException e) {
-                    logger.error("IllegalAccessException processing post request mapping {}", e);
-                    return e.getMessage();
-                } catch (InvocationTargetException e) {
-                    logger.error("InvocationTargetException processing post request mapping {}", e);
+                    return (String) method.invoke(controller, parameters, requestBody);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    logger.error("Exception processing post request", e);
+                    logger.error("parameters {}", mapToCsv(parameters));
+                    logger.error("request body {}", requestBody);
                     return e.getMessage();
                 }
 
@@ -152,23 +159,37 @@ public class SampleContext implements ApplicationContext {
         };
     }
 
-    @Override
     public Map<String, Function<Map<String, String>, String>> requestMappingGet() {
         return getControllerMap;
     }
 
-    @Override
     public Map<String, BiFunction<Map<String, String>, String, String>> requestMappingPost() {
         return postControllerMap;
     }
 
-    @Override
+
     public Map<String, BiFunction<Map<String, String>, String, String>> requestMappingPut() {
         return putControllerMap;
     }
 
-    @Override
     public Map<String, Function<Map<String, String>, String>> requestMappingDelete() {
         return deleteControllerMap;
+    }
+
+    private String mapToCsv(Map<String, String> map) {
+        if (map.isEmpty()) {
+            return "";
+        }
+        return map.entrySet().stream().map(new Function<Map.Entry<String, String>, String>() {
+            @Override
+            public String apply(Map.Entry<String, String> entry) {
+                return entry.getKey() + ":" + entry.getValue();
+            }
+        }).reduce(new BinaryOperator<String>() {
+            @Override
+            public String apply(String s, String s2) {
+                return s + "," + s2;
+            }
+        }).get();
     }
 }

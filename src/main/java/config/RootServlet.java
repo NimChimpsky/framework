@@ -21,16 +21,16 @@ public class RootServlet extends HttpServlet {
     private Map<String, Function<Map<String, String>, String>> requestMappingsDelete;
     private Map<String, BiFunction<Map<String, String>, String, String>> requestMappingsPost;
     private Map<String, BiFunction<Map<String, String>, String, String>> requestMappingsPut;
-    private ApplicationContext applicationContext;
+    private Context context;
 
     @Override
     public void init() {
         ServletContext servletContext = getServletContext();
-        applicationContext = (ApplicationContext) servletContext.getAttribute(ApplicationContext.getContext());
-        requestMappingsGet = applicationContext.requestMappingGet();
-        requestMappingsPost = applicationContext.requestMappingPost();
-        requestMappingsPut = applicationContext.requestMappingPut();
-        requestMappingsDelete = applicationContext.requestMappingDelete();
+        context = (Context) servletContext.getAttribute(Context.getContext());
+        requestMappingsGet = context.requestMappingGet();
+        requestMappingsPost = context.requestMappingPost();
+        requestMappingsPut = context.requestMappingPut();
+        requestMappingsDelete = context.requestMappingDelete();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class RootServlet extends HttpServlet {
 
     private void queryParametersOnly(HttpServletRequest httpServletRequest, HttpServletResponse response, Map<String, Function<Map<String, String>, String>> requestMappingsGet) throws IOException {
         String url = httpServletRequest.getRequestURI();
-        String key = url.replace(ApplicationContext.getPath(), "");
+        String key = url.replace(Context.getPath(), "");
         Function<Map<String, String>, String> controller = requestMappingsGet.get(key);
         String jsonBody = controller.apply(extractParameterMap(httpServletRequest.getParameterMap()));
         response.setContentType("application/json");
@@ -67,7 +67,7 @@ public class RootServlet extends HttpServlet {
 
     private void withJsonRequestBody(HttpServletRequest httpServletRequest, HttpServletResponse response, Map<String, BiFunction<Map<String, String>, String, String>> requestMappings) throws IOException {
         String url = httpServletRequest.getRequestURI();
-        String key = url.replace(ApplicationContext.getPath(), "");
+        String key = url.replace(Context.getPath(), "");
         String requestBody = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         Map<String, String> parameterMap = extractParameterMap(httpServletRequest.getParameterMap());
         BiFunction<Map<String, String>, String, String> controller = requestMappings.get(key);
