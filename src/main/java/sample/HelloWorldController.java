@@ -39,7 +39,9 @@ public class HelloWorldController {
             logger.info("key {}, val {}", entry.getKey(), entry.getValue());
         }
         logger.info("jsonBody {} ", jsonBody);
-        return "posted hello world";
+
+        Person person = new Person("test-name", 50);
+        return gson.toJson(person);
     }
 
     @Put("/HelloWorld")

@@ -30,7 +30,7 @@ public class Context {
     public Context(DependencyProvider dependencyProvider) {
         this.dependencyProvider = dependencyProvider;
         try {
-            Class[] clazzes = ClassPathScannerHelper.getControllers("au.com.metriculous.api");
+            Class[] clazzes = ClassPathScannerHelper.getControllers("sample");
             findMappings(clazzes);
         } catch (ClassNotFoundException | IOException e) {
             logger.error("Error scanning classes", e);
