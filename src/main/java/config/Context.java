@@ -45,6 +45,7 @@ public class Context {
     public static String getContext() {
         return "context";
     }
+
     public void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
             Method[] methods = clazz.getDeclaredMethods();
