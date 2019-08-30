@@ -51,6 +51,7 @@ public class Server {
             throw new RuntimeException(e);
         }
         ResourceManager resourceManager = new ClassPathResourceManager(Server.class.getClassLoader());
+        resourceManager.getResource("Index.html");
         Undertow server = Undertow.builder()
                                   .addHttpListener(port, "localhost")
                                   .setHandler(createHandler(servletHandler))
