@@ -4,15 +4,15 @@ import config.SampleDependencyProvider;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.PathResourceManager;
+import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
-import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static io.undertow.Handlers.resource;
@@ -50,28 +50,20 @@ public class Server {
             LOGGER.error("DeploymentManager failed to start, contact support");
             throw new RuntimeException(e);
         }
+        ResourceManager resourceManager = new ClassPathResourceManager(Server.class.getClassLoader());
         Undertow server = Undertow.builder()
                                   .addHttpListener(port, "localhost")
                                   .setHandler(createHandler(servletHandler))
                                   //.setHandler(servletHandler)
                                   .build();
         server.start();
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-
-//        Path index = Paths.get("src/main/resources/Index.html");
-        Path index = Paths.get("/Index.html");
-        File file = index.toFile();
-
-        LOGGER.info("can read " + file.canRead());
-        LOGGER.info("name  " + file.getAbsolutePath());
 
 
     }
 
     private static HttpHandler createHandler(HttpHandler servletHandler) {
         return Handlers.path()
-                       .addExactPath("/", resource(new PathResourceManager(Paths.get("src/main/resources/Index.html"), 100))
+                       .addExactPath("/", resource(new ClassPathResourceManager(SePaths.get("resources/Index.html"), 100))
                                .setDirectoryListingEnabled(false)) // resolves index.html
                        .addPrefixPath(Context.getPath(), servletHandler)
                        .addPrefixPath("/static", resource(new PathResourceManager(Paths.get("src/main/resources/"))));
