@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
+import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static io.undertow.Handlers.resource;
@@ -54,6 +56,15 @@ public class Server {
                                   //.setHandler(servletHandler)
                                   .build();
         server.start();
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+
+//        Path index = Paths.get("src/main/resources/Index.html");
+        Path index = Paths.get("/Index.html");
+        File file = index.toFile();
+
+        LOGGER.info("can read " + file.canRead());
+        LOGGER.info("name  " + file.getName());
 
 
     }
