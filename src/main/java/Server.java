@@ -64,7 +64,7 @@ public class Server {
         File file = index.toFile();
 
         LOGGER.info("can read " + file.canRead());
-        LOGGER.info("name  " + file.getName());
+        LOGGER.info("name  " + file.getAbsolutePath());
 
 
     }
