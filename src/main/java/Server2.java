@@ -29,14 +29,13 @@ public class Server2 {
             }
 // StandardCharsets.UTF_8.name() > JDK 7
             OutputStream os = t.getResponseBody();
-//            String response = result.toString("UTF-8");
+            String response = result.toString("UTF-8");
 
 //            copy(inputStream,os );
-//            t.sendResponseHeaders(200, response.length());
+            t.sendResponseHeaders(200, response.length());
 
             os.write(result.toByteArray());
             os.close();
-            t.setAttribute();
         }
     }
 
