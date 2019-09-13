@@ -3,6 +3,8 @@ package au.com.metricsoftware.metrix;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +16,7 @@ public class MetrixServer {
     private final Integer port;
     private final String context;
     private final String[] controllerPackages;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public MetrixServer(Builder builder) {
         this.port = builder.port;
@@ -23,6 +26,7 @@ public class MetrixServer {
     }
 
     public void start() throws IOException {
+        logger.info("Starting metrix server on port {}", port);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext(context, new MyHandler());
         server.setExecutor(null); // creates a default executor
