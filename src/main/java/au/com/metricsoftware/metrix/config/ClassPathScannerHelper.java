@@ -1,6 +1,6 @@
-package config;
+package au.com.metricsoftware.metrix.config;
 
-import config.annotations.Controller;
+import au.com.metricsoftware.metrix.annotations.Controller;
 
 import java.io.File;
 import java.io.IOException;
