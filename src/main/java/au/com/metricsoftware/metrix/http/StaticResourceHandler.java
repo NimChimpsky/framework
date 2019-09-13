@@ -2,6 +2,8 @@ package au.com.metricsoftware.metrix.http;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,10 +12,13 @@ import java.io.OutputStream;
 import java.net.URI;
 
 public class StaticResourceHandler implements HttpHandler {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
-    public void handle(HttpExchange t) throws IOException {
-        URI requestUri = t.getRequestURI();
-        String path = requestUri.getPath();
+    public void handle(HttpExchange httpExchange) throws IOException {
+
+        URI requestUri = httpExchange.getRequestURI();
+        new RequestParser().parse(requestUri);
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("Index.html");
         ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -23,11 +28,11 @@ public class StaticResourceHandler implements HttpHandler {
             result.write(buffer, 0, length);
         }
 // StandardCharsets.UTF_8.name() > JDK 7
-        OutputStream os = t.getResponseBody();
+        OutputStream os = httpExchange.getResponseBody();
         String response = result.toString("UTF-8");
 
 //            copy(inputStream,os );
-        t.sendResponseHeaders(200, response.length());
+        httpExchange.sendResponseHeaders(200, response.length());
 
         os.write(result.toByteArray());
         os.close();
