@@ -26,8 +26,8 @@ public class MetrixServer {
     public void start() throws IOException {
         logger.info("Starting metrix server on port {}", port);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext(context, new StaticResourceHandler());
-        server.createContext(apiContext, new ApiResourceHandler());
+        server.createContext(context, new StaticResourceHandler(context));
+        server.createContext(apiContext, new ApiResourceHandler(apiContext));
         server.setExecutor(null); // creates a default executor
         server.start();
     }
@@ -44,7 +44,7 @@ public class MetrixServer {
             return this;
         }
 
-        public Builder withContext(String context) {
+        public Builder withStaticContext(String context) {
             this.context = context;
             return this;
         }

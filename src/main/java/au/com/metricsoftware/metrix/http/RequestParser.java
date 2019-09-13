@@ -20,6 +20,9 @@ public class RequestParser {
         String rawAuthority = requestUri.getRawAuthority();
         String fragment = requestUri.getFragment();
         String rawFragment = requestUri.getRawFragment();
-        logger.info("path {}", path);
+        logger.info("path {}, rawPath{}", path, rawPath);
+        logger.info("query {}, rawQuery{}", query, rawQuery);
+        logger.info("authority {}, rawAuthority{}", authority, rawAuthority);
+        logger.info("fragment {}, rawFragment{}", fragment, rawFragment);
     }
 }

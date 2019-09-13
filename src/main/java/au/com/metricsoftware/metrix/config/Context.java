@@ -1,4 +1,9 @@
 package au.com.metricsoftware.metrix.config;
+
+import au.com.metricsoftware.metrix.annotations.Delete;
+import au.com.metricsoftware.metrix.annotations.Get;
+import au.com.metricsoftware.metrix.annotations.Post;
+import au.com.metricsoftware.metrix.annotations.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

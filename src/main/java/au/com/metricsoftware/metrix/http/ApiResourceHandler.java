@@ -11,6 +11,10 @@ import java.net.URI;
 public class ApiResourceHandler implements HttpHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    public ApiResourceHandler(String apiContext) {
+
+    }
+
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         URI requestUri = httpExchange.getRequestURI();

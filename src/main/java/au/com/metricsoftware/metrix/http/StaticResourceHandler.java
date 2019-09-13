@@ -13,14 +13,23 @@ import java.net.URI;
 
 public class StaticResourceHandler implements HttpHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final String context;
+
+
+    public StaticResourceHandler(String context) {
+        this.context = context;
+
+    }
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
 
         URI requestUri = httpExchange.getRequestURI();
         new RequestParser().parse(requestUri);
+        String path = requestUri.getPath();
+        String resource = context != path ? path.replace(context, "") : "Index.html";
         ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("Index.html");
+        InputStream inputStream = classLoader.getResourceAsStream(resource);
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
