@@ -37,13 +37,6 @@ public class Context {
 
     }
 
-    public static String getPath() {
-        return "/api/v1";
-    }
-
-    public static String getContext() {
-        return "context";
-    }
 
     public void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {

@@ -27,8 +27,9 @@ public class StaticResourceHandler implements HttpHandler {
         URI requestUri = httpExchange.getRequestURI();
         new RequestParser().parse(requestUri);
         String path = requestUri.getPath();
-        String resource = context != path ? path.replace(context, "") : "Index.html";
+        String resource = context.equals(path) ? "Index.html" : path.replaceFirst(context, "");
         ClassLoader classLoader = getClass().getClassLoader();
+        logger.info("context {} , path {} resource {}", context, path, resource);
         InputStream inputStream = classLoader.getResourceAsStream(resource);
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
