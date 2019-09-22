@@ -1,4 +1,4 @@
-**Serving json in a fat jar under 1mb**
+**Serving json in a fat jar under 500kb**
 
 Open source framework for building json serving web api's, all under 1mb (yes less than one megabyte include logging)    
 
