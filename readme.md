@@ -1,4 +1,4 @@
-**Serving json in a fat jar under 4mb**
+**Serving json in a fat jar under 500kb**
 
 A fully configured project that includes sl4j, undertow, and gson.  
 
