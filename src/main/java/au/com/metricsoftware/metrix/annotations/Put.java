@@ -1,4 +1,4 @@
-package config.annotations;
+package au.com.metricsoftware.metrix.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

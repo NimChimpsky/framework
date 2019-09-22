@@ -1,10 +1,9 @@
-package config;
+package au.com.metricsoftware.metrix.config;
 
-
-import config.annotations.Delete;
-import config.annotations.Get;
-import config.annotations.Post;
-import config.annotations.Put;
+import au.com.metricsoftware.metrix.annotations.Delete;
+import au.com.metricsoftware.metrix.annotations.Get;
+import au.com.metricsoftware.metrix.annotations.Post;
+import au.com.metricsoftware.metrix.annotations.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +37,6 @@ public class Context {
 
     }
 
-    public static String getPath() {
-        return "/api/v1";
-    }
-
-    public static String getContext() {
-        return "context";
-    }
 
     public void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {

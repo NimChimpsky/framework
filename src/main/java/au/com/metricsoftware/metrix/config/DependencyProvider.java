@@ -1,4 +1,4 @@
-package config;
+package au.com.metricsoftware.metrix.config;
 
 public interface DependencyProvider {
 
