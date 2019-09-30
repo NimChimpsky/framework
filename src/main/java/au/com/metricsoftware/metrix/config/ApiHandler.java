@@ -99,12 +99,23 @@ public class ApiHandler implements HttpHandler {
         String key = url.replace(prefix, "");
         Function<Map<String, String>, String> controller = requestMappingsGet.get(key);
         Map<String, String> parameterMap = requestParser.queryStringToParameterMap(httpExchange);
+        String prefix = "";
+        if (logger.isDebugEnabled()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                stringBuilder.append(prefix + entry.getKey() + "=" + entry.getValue());
+                prefix = ", ";
+            }
+            logger.debug("Query parameters found : {}", stringBuilder.toString());
+
+        }
         String jsonBody = controller.apply(parameterMap);
         send(httpExchange, jsonBody);
 
     }
 
     private void send(HttpExchange httpExchange, String jsonBody) throws IOException {
+        logger.debug("Reponse body returned : {} ", jsonBody);
         OutputStream os = httpExchange.getResponseBody();
         httpExchange.sendResponseHeaders(200, jsonBody.length());
         os.write(jsonBody.getBytes("UTF-8"));
