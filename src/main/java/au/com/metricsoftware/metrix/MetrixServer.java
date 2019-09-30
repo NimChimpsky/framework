@@ -1,7 +1,6 @@
 package au.com.metricsoftware.metrix;
 
-import au.com.metricsoftware.metrix.config.ApiResourceHandler;
-import au.com.metricsoftware.metrix.config.StaticResourceHandler;
+import au.com.metricsoftware.metrix.config.*;
 import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +11,8 @@ import java.util.Map;
 
 public class MetrixServer {
     private final Integer port;
-    private final String context;
-    private final String apiContext;
+    private final String prefix;
+    private final String apiPrefix;
     private final String[] controllerPackages;
     private final Map<Class<?>, Object> dependencies;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -21,17 +20,20 @@ public class MetrixServer {
     public MetrixServer(Builder builder) {
         this.port = builder.port;
         this.controllerPackages = builder.controllerPackages;
-        this.context = builder.context;
-        this.apiContext = builder.apiContext;
+        this.prefix = builder.prefix;
+        this.apiPrefix = builder.apiPrefix;
         this.dependencies = builder.dependencies;
     }
 
-    public void start() throws IOException {
+    public void start() throws IOException, ClassNotFoundException {
         logger.info("Starting metrix server on port {}", port);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext(context, new StaticResourceHandler(context));
-        server.createContext(apiContext, new ApiResourceHandler(apiContext));
-
+        server.createContext(prefix, new StaticResourceHandler(prefix));
+        Class[] controllers = ClassPathScannerHelper.getControllers(controllerPackages);
+        logger.info("Found {} controllers ", controllers.length);
+        Context context = new Context(controllers, dependencies);
+        RequestParser requestParser = new RequestParser();
+        server.createContext(apiPrefix, new ApiHandler(apiPrefix, context, requestParser));
         server.setExecutor(null); // creates a default executor
         server.start();
     }
@@ -39,8 +41,8 @@ public class MetrixServer {
 
     public static class Builder {
         private Integer port = 80;
-        private String context = "/";
-        private String apiContext = "api";
+        private String prefix = "/";
+        private String apiPrefix = "api";
         private Map<Class<?>, Object> dependencies;
         private String[] controllerPackages = {""};
 
@@ -49,13 +51,13 @@ public class MetrixServer {
             return this;
         }
 
-        public Builder withStaticContext(String context) {
-            this.context = context;
+        public Builder withUrlPrefix(String prefix) {
+            this.prefix = prefix;
             return this;
         }
 
-        public Builder withUrlPrefix(String urlPrefix) {
-            this.apiContext = apiContext;
+        public Builder withApiUrlPrefix(String apiPrefix) {
+            this.apiPrefix = apiPrefix;
             return this;
         }
 

@@ -18,7 +18,7 @@ public class RequestParser {
     public RequestParser() {
     }
 
-    public void parse(URI requestUri) {
+    void parse(URI requestUri) {
         String path = requestUri.getPath();
         String rawPath = requestUri.getRawPath();
         String query = requestUri.getQuery();
@@ -33,7 +33,7 @@ public class RequestParser {
 //        logger.info("fragment {}, rawFragment{}", fragment, rawFragment);
     }
 
-    public Map<String, String> parseQueryString(HttpExchange httpExchange) {
+    Map<String, String> queryStringToParameterMap(HttpExchange httpExchange) {
         String qs = httpExchange.getRequestURI().getQuery();
         Map<String, String> result = new HashMap<>();
         if (qs == null)
@@ -61,14 +61,14 @@ public class RequestParser {
         return result;
     }
 
-    public String bodyParser(HttpExchange httpExchange) throws IOException {
+    String requestBodyToString(HttpExchange httpExchange) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
         while ((length = httpExchange.getRequestBody().read(buffer)) != -1) {
             result.write(buffer, 0, length);
         }
-// StandardCharsets.UTF_8.name() > JDK 7
+        // StandardCharsets.UTF_8.name() > JDK 7
         return result.toString("UTF-8");
     }
 }

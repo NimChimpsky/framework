@@ -7,7 +7,6 @@ import au.com.metricsoftware.metrix.annotations.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,24 +24,15 @@ public class Context {
     private Map<String, BiFunction<Map<String, String>, String, String>> postControllerMap = new HashMap<>();
     private Map<String, BiFunction<Map<String, String>, String, String>> putControllerMap = new HashMap<>();
     private final Map<Class<?>, Object> dependencyProvider;
-    private final String prefix;
 
-    public Context(final String prefix, final Map<Class<?>, Object> dependencyProvider) {
+
+    public Context(Class<?>[] clazzes, final Map<Class<?>, Object> dependencyProvider) {
         this.dependencyProvider = dependencyProvider;
-        try {
-            Class[] clazzes = ClassPathScannerHelper.getControllers("sample");
-            findMappings(clazzes);
-        } catch (ClassNotFoundException | IOException e) {
-            logger.error("Error scanning classes", e);
-        }
-        this.prefix = prefix;
+        findMappings(clazzes);
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
 
-    public void findMappings(Class<?>[] classesForScanning) {
+    private void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
