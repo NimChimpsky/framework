@@ -1,4 +1,4 @@
-package au.com.metricsoftware.metrix.http;
+package au.com.metricsoftware.metrix.config;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

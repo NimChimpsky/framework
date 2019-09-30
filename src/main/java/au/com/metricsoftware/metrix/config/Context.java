@@ -24,9 +24,10 @@ public class Context {
     private Map<String, Function<Map<String, String>, String>> deleteControllerMap = new HashMap<>();
     private Map<String, BiFunction<Map<String, String>, String, String>> postControllerMap = new HashMap<>();
     private Map<String, BiFunction<Map<String, String>, String, String>> putControllerMap = new HashMap<>();
-    private final DependencyProvider dependencyProvider;
+    private final Map<Class<?>, Object> dependencyProvider;
+    private final String prefix;
 
-    public Context(DependencyProvider dependencyProvider) {
+    public Context(final String prefix, final Map<Class<?>, Object> dependencyProvider) {
         this.dependencyProvider = dependencyProvider;
         try {
             Class[] clazzes = ClassPathScannerHelper.getControllers("sample");
@@ -34,9 +35,12 @@ public class Context {
         } catch (ClassNotFoundException | IOException e) {
             logger.error("Error scanning classes", e);
         }
-
+        this.prefix = prefix;
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
 
     public void findMappings(Class<?>[] classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
