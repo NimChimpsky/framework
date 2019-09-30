@@ -51,26 +51,34 @@ public class ApiHandler implements HttpHandler {
                 doDelete(httpExchange);
                 break;
             }
+            default: {
+                logger.error("No handler specified for {}", requestMethod);
+                break;
+            }
         }
     }
 
 
     protected void doGet(final HttpExchange httpExchange) throws IOException {
+        logger.debug("GET request {}", httpExchange.getRequestURI().getPath());
         queryParametersOnly(httpExchange, requestMappingsGet);
     }
 
 
     protected void doDelete(final HttpExchange httpExchange) throws IOException {
+        logger.debug("DELETE request {}", httpExchange.getRequestURI().getPath());
         queryParametersOnly(httpExchange, requestMappingsDelete);
     }
 
 
     protected void doPost(final HttpExchange httpExchange) throws IOException {
+        logger.debug("POST request {}", httpExchange.getRequestURI().getPath());
         withJsonRequestBody(httpExchange, requestMappingsPost);
     }
 
 
     protected void doPut(final HttpExchange httpExchange) throws IOException {
+        logger.debug("PUT request {}", httpExchange.getRequestURI().getPath());
         withJsonRequestBody(httpExchange, requestMappingsPut);
     }
 
@@ -78,7 +86,9 @@ public class ApiHandler implements HttpHandler {
         String url = httpExchange.getRequestURI().getPath();
         String key = url.replace(prefix, "");
         String requestBody = requestParser.requestBodyToString(httpExchange);
+        logger.debug("Request Body found {}", requestBody);
         Map<String, String> parameterMap = requestParser.queryStringToParameterMap(httpExchange);
+
         BiFunction<Map<String, String>, String, String> controller = requestMappings.get(key);
         String jsonBody = controller.apply(parameterMap, requestBody);
         send(httpExchange, jsonBody);
