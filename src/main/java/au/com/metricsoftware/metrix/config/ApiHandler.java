@@ -84,20 +84,20 @@ public class ApiHandler implements HttpHandler {
 
     private void withJsonRequestBody(final HttpExchange httpExchange, Map<String, BiFunction<Map<String, String>, String, String>> requestMappings) throws IOException {
         String url = httpExchange.getRequestURI().getPath();
-//        String key = url.replace(prefix, "");
+        String key = url.replace(prefix, "");
         String requestBody = requestParser.requestBodyToString(httpExchange);
         logger.debug("Request Body received {}", requestBody);
         Map<String, String> parameterMap = requestParser.queryStringToParameterMap(httpExchange);
 
-        BiFunction<Map<String, String>, String, String> controller = requestMappings.get(url);
+        BiFunction<Map<String, String>, String, String> controller = requestMappings.get(key);
         String jsonBody = controller.apply(parameterMap, requestBody);
         send(200, httpExchange, jsonBody);
     }
 
     private void queryParametersOnly(final HttpExchange httpExchange, Map<String, Function<Map<String, String>, String>> requestMappingsGet) throws IOException {
         String url = httpExchange.getRequestURI().getPath();
-//        String key = url.replace(prefix, "");
-        Function<Map<String, String>, String> controller = requestMappingsGet.get(url);
+        String key = url.replace(prefix, "");
+        Function<Map<String, String>, String> controller = requestMappingsGet.get(key);
         if (controller == null) {
             mappingNotFound(url, httpExchange);
         }

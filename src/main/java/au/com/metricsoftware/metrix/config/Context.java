@@ -46,6 +46,7 @@ public class Context {
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
                         Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
+                        // TODO check method signature takes Map<String, String> as argument
                         getControllerMap.put(url, function);
                     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         logger.error("Exception scanning get request mappings {}", e);
