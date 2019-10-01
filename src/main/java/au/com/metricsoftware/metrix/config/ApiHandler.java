@@ -91,33 +91,46 @@ public class ApiHandler implements HttpHandler {
 
         BiFunction<Map<String, String>, String, String> controller = requestMappings.get(key);
         String jsonBody = controller.apply(parameterMap, requestBody);
-        send(httpExchange, jsonBody);
+        send(200, httpExchange, jsonBody);
     }
 
     private void queryParametersOnly(final HttpExchange httpExchange, Map<String, Function<Map<String, String>, String>> requestMappingsGet) throws IOException {
         String url = httpExchange.getRequestURI().getPath();
         String key = url.replace(prefix, "");
         Function<Map<String, String>, String> controller = requestMappingsGet.get(key);
+        if (controller == null) {
+            mappingNotFound(key, httpExchange);
+        }
         Map<String, String> parameterMap = requestParser.queryStringToParameterMap(httpExchange);
-        String prefix = "";
         if (logger.isDebugEnabled()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-                stringBuilder.append(prefix + entry.getKey() + "=" + entry.getValue());
-                prefix = ", ";
-            }
-            logger.debug("Query parameters found : {}", stringBuilder.toString());
-
+            logMap(parameterMap);
         }
         String jsonBody = controller.apply(parameterMap);
-        send(httpExchange, jsonBody);
+        send(200, httpExchange, jsonBody);
 
     }
 
-    private void send(HttpExchange httpExchange, String jsonBody) throws IOException {
+    private void mappingNotFound(String key, HttpExchange httpExchange) throws IOException {
+        logger.error("Mapping for {} not found", key);
+        send(404, httpExchange, "No mapping found for " + key);
+    }
+
+    private void logMap(Map<String, String> parameterMap) {
+
+        String paramPrefix = "";
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            stringBuilder.append(paramPrefix + entry.getKey() + "=" + entry.getValue());
+            paramPrefix = ", ";
+        }
+        logger.debug("Query parameters found : {}", stringBuilder.toString());
+
+    }
+
+    private void send(int code, HttpExchange httpExchange, String jsonBody) throws IOException {
         logger.debug("Response body returned : {} ", jsonBody);
         OutputStream os = httpExchange.getResponseBody();
-        httpExchange.sendResponseHeaders(200, jsonBody.length());
+        httpExchange.sendResponseHeaders(code, jsonBody.length());
         os.write(jsonBody.getBytes("UTF-8"));
         os.close();
     }
