@@ -26,13 +26,13 @@ public class Context {
     private final Map<Class<?>, Object> dependencyProvider;
 
 
-    public Context(Class<?>[] clazzes, final Map<Class<?>, Object> dependencyProvider) {
+    public Context(Iterable<Class<?>> clazzes, final Map<Class<?>, Object> dependencyProvider) {
         this.dependencyProvider = dependencyProvider;
         findMappings(clazzes);
     }
 
 
-    private void findMappings(Class<?>[] classesForScanning) {
+    private void findMappings(Iterable<Class<?>> classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {

@@ -2,7 +2,6 @@ package au.com.metricsoftware.metrix;
 
 import au.com.metricsoftware.metrix.config.*;
 import com.sun.net.httpserver.HttpServer;
-import io.github.classgraph.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,27 +30,8 @@ public class MetrixServer {
         logger.info("Starting metrix server on port {}", port);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext(prefix, new StaticResourceHandler(prefix));
-        String pkg = "com.xyz";
-        String routeAnnotation = pkg + ".Route";
-        try (ScanResult scanResult =
-                     new ClassGraph()
-                             .enableAllInfo()             // Scan classes, methods, fields, annotations
-                             .whitelistPackages(controllerPackages)      // Scan com.xyz and subpackages (omit to scan all packages)
-                             .scan()) {                   // Start the scan
-            List<Class> controllers = new Class[];
-            ClassInfoList classInfoList = scanResult.getClassesWithAnnotation("Controller");
-
-            for (ClassInfo routeClassInfo : classInfoList) {
-                Class routeClassInfo.getClass();
-                AnnotationInfo routeAnnotationInfo = routeClassInfo.getAnnotationInfo(routeAnnotation);
-                List<AnnotationParameterValue> routeParamVals = routeAnnotationInfo.getParameterValues();
-                // @com.xyz.Route has one required parameter
-                String route = (String) routeParamVals.get(0).getValue();
-                System.out.println(routeClassInfo.getName() + " is annotated with route " + route);
-            }
-        }
-         =ClassPathScannerHelper.getControllers(controllerPackages);
-        logger.info("Found {} controllers ", controllers.length);
+        List<Class<?>> controllers = ClassPathUtil.findControllers(controllerPackages);
+        logger.info("Found {} controllers ", controllers.size());
         Context context = new Context(controllers, dependencies);
         RequestParser requestParser = new RequestParser();
         server.createContext(apiPrefix, new ApiHandler(apiPrefix, context, requestParser));
