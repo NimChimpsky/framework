@@ -34,11 +34,15 @@ public class Context {
 
     private void findMappings(Iterable<Class<?>> classesForScanning) {
         for (Class<?> clazz : classesForScanning) {
+            logger.debug("clazz " + clazz.getSimpleName());
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
+                logger.debug("method " + method.getName());
                 if (method.isAnnotationPresent(Get.class)) {
+                    logger.debug("method " + method.getName() + "has Get annotation");
                     Get getRequestMapper = method.getAnnotation(Get.class);
                     String url = getRequestMapper.value();
+                    logger.debug("method " + method.getName() + "has url " + url);
                     try {
                         final Object controller = createAndPopulateDependencies(clazz);
                         Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);

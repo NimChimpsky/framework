@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ClassPathUtil {
 
-    public static List<Class<?>> findControllers(String... controllerPackages) {
+    public static List<Class<?>> findControllers(String... controllerPackages) throws ClassNotFoundException {
         List<Class<?>> controllers = new LinkedList<>();
         ScanResult scanResult =
                 new ClassGraph()
@@ -21,7 +21,8 @@ public class ClassPathUtil {
         ClassInfoList classInfoList = scanResult.getClassesWithAnnotation("au.com.metricsoftware.metrix.annotations.Controller");
 
         for (ClassInfo routeClassInfo : classInfoList) {
-            controllers.add(routeClassInfo.getClass());
+            controllers.add(Class.forName(routeClassInfo.getName()));
+
         }
 
         scanResult.close();
