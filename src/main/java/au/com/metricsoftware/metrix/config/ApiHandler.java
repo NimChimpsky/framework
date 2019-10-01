@@ -86,7 +86,7 @@ public class ApiHandler implements HttpHandler {
         String url = httpExchange.getRequestURI().getPath();
         String key = url.replace(prefix, "");
         String requestBody = requestParser.requestBodyToString(httpExchange);
-        logger.debug("Request Body found {}", requestBody);
+        logger.debug("Request Body received {}", requestBody);
         Map<String, String> parameterMap = requestParser.queryStringToParameterMap(httpExchange);
 
         BiFunction<Map<String, String>, String, String> controller = requestMappings.get(key);
@@ -115,7 +115,7 @@ public class ApiHandler implements HttpHandler {
     }
 
     private void send(HttpExchange httpExchange, String jsonBody) throws IOException {
-        logger.debug("Reponse body returned : {} ", jsonBody);
+        logger.debug("Response body returned : {} ", jsonBody);
         OutputStream os = httpExchange.getResponseBody();
         httpExchange.sendResponseHeaders(200, jsonBody.length());
         os.write(jsonBody.getBytes("UTF-8"));
