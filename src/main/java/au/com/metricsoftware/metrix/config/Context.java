@@ -123,7 +123,6 @@ public class Context {
                     logger.error("parameters {}", mapToCsv(parameters));
                     return e.getMessage();
                 }
-
             }
         };
     }

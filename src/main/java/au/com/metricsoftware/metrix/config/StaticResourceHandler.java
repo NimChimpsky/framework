@@ -18,7 +18,6 @@ public class StaticResourceHandler implements HttpHandler {
 
     public StaticResourceHandler(String context) {
         this.context = context;
-
     }
 
     @Override
@@ -29,7 +28,7 @@ public class StaticResourceHandler implements HttpHandler {
         String path = requestUri.getPath();
         String resource = context.equals(path) ? "Index.html" : path.replaceFirst(context, "");
         ClassLoader classLoader = getClass().getClassLoader();
-        logger.info("context {} , path {} resource {}", context, path, resource);
+        logger.debug("context {}, path {}, resource {}", context, path, resource);
         InputStream inputStream = classLoader.getResourceAsStream(resource);
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
