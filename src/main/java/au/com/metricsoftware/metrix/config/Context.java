@@ -119,8 +119,8 @@ public class Context {
                 try {
                     return (String) method.invoke(controller, parameters);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    logger.error("Exception processing get request mapping {}", e);
-                    logger.error("parameters {}", mapToCsv(parameters));
+                    logger.info("parameters {}", mapToCsv(parameters));
+                    logger.error("Exception processing get request mapping", e);
                     return e.getMessage();
                 }
             }
@@ -135,9 +135,9 @@ public class Context {
                 try {
                     return (String) method.invoke(controller, parameters, requestBody);
                 } catch (IllegalAccessException | InvocationTargetException e) {
+                    logger.info("parameters {}", mapToCsv(parameters));
+                    logger.info("request body {}", requestBody);
                     logger.error("Exception processing post request", e);
-                    logger.error("parameters {}", mapToCsv(parameters));
-                    logger.error("request body {}", requestBody);
                     return e.getMessage();
                 }
 
