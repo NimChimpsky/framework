@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -23,11 +24,14 @@ public class PutProcessor extends BaseAnnotationProcessor {
         Put putRequestMapper = method.getAnnotation(Put.class);
         String url = putRequestMapper.value();
         try {
-            final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
-            BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
-            controllerMap.put(url, function);
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            logger.error("Exception scanning put request mappings", e);
+            if (validReturnType(method) && validMethod(method, 2, Arrays.asList(Map.class, String.class))) {
+                final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
+                BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
+                controllerMap.put(url, function);
+            }
+
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
+            logger.error("Exception scanning request mappings", e);
         }
     }
 

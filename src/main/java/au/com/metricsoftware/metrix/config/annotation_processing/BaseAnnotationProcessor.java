@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
@@ -20,9 +21,31 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
         this.dependencyProvider = dependencyProvider;
     }
 
-    protected boolean validMethod(Method method, int count, Class<Map> clazz) {
-        return !method.getReturnType()
-                      .equals(String.class) || method.getParameterCount() != count || !method.getParameterTypes()[0].equals(clazz);
+    protected boolean validReturnType(Method method) throws AnnotationProcessingException {
+        if (method.getReturnType().equals(String.class)) {
+            return true;
+        } else {
+            String className = method.getDeclaringClass().getSimpleName();
+            String methodName = method.getName();
+            throw new AnnotationProcessingException(className + "." + methodName + " should return String");
+        }
+    }
+
+    protected boolean validMethod(Method method, int count, List<Class> expectedParameters) throws AnnotationProcessingException {
+        String className = method.getDeclaringClass().getSimpleName();
+        String methodName = method.getName();
+        if (method.getParameterCount() != count) {
+            throw new AnnotationProcessingException("Wrong number of arguments for " + className + "." + methodName + ", should be " + count);
+        }
+        Class<?>[] parameterType = method.getParameterTypes();
+        for (int i = 0; i < expectedParameters.size(); i++) {
+            if (!parameterType[i].equals(expectedParameters.get(i))) {
+                throw new AnnotationProcessingException("Wrong arguments type for " + className + "." + methodName + ",expected " + expectedParameters
+                        .get(i));
+            }
+        }
+        return true;
+
     }
 
     protected Object createAndPopulateDependencies(Class<?> clazz) throws IllegalAccessException, InstantiationException, InvocationTargetException {

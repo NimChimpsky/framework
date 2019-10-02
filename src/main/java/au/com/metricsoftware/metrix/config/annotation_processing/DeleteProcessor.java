@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -22,17 +23,15 @@ public class DeleteProcessor extends BaseAnnotationProcessor {
     public void accept(Method method) {
         Delete deleteRequestMapper = method.getAnnotation(Delete.class);
         String url = deleteRequestMapper.value();
+
         try {
-            if (!validMethod(method, 1, Map.class)) {
-                logger.error("GET methods only allowed one parameter, Map<String, String>");
-                throw new IllegalAccessException(method.getDeclaringClass()
-                                                       .getSimpleName() + "." + method.getName() + " should have one parameter of type Map<String, String>");
+            if (validReturnType(method) && validMethod(method, 1, Arrays.asList(Map.class))) {
+                final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
+                Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
+                controllerMap.put(url, function);
             }
-            final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
-            Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
-            controllerMap.put(url, function);
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            logger.error("Exception scanning delete request mappings", e);
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
+            logger.error("Exception scanning request mappings", e);
         }
     }
 
