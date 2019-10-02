@@ -4,9 +4,7 @@ import au.com.metricsoftware.metrix.annotations.Get;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -23,15 +21,8 @@ public class GetProcessor extends BaseAnnotationProcessor {
     public void accept(Method method) {
         Get getRequestMapper = method.getAnnotation(Get.class);
         String url = getRequestMapper.value();
-        try {
-            if (validReturnType(method) && validMethod(method, 1, Arrays.asList(Map.class))) {
-                final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
-                Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
-                controllerMap.put(url, function);
-            }
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
-            logger.error("Exception scanning request mappings", e);
-        }
+        Function<Map<String, String>, String> function = extractQueryStringFunction(method);
+        controllerMap.put(url, function);
     }
 
     public Map<String, Function<Map<String, String>, String>> requestMapper() {

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -48,6 +49,33 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
 
     }
 
+    protected Function<Map<String, String>, String> extractQueryStringFunction(Method method) {
+        try {
+            if (validReturnType(method) && validMethod(method, 1, Arrays.asList(Map.class))) {
+                final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
+                Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
+                return function;
+            }
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
+            logger.error("Exception scanning request mappings", e);
+
+        }
+        return null; // will result in 404
+    }
+
+    protected BiFunction<Map<String, String>, String, String> extractResponseBodyAndQueryStringFunction(Method method) {
+        try {
+            if (validReturnType(method) && validMethod(method, 2, Arrays.asList(Map.class, String.class))) {
+                final Object controller = createAndPopulateDependencies(method.getDeclaringClass());
+                BiFunction<Map<String, String>, String, String> function = createRequestBodyFunction(method, controller);
+                return function;
+            }
+
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
+            logger.error("Exception scanning request mappings", e);
+        }
+        return null;// will result in 404
+    }
     protected Object createAndPopulateDependencies(Class<?> clazz) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         Constructor[] constructors = clazz.getConstructors();
         Constructor constructor = constructors[0];
