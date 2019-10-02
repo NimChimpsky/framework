@@ -59,25 +59,25 @@ public class ApiHandler implements HttpHandler {
     }
 
 
-    protected void doGet(final HttpExchange httpExchange) throws IOException {
+    private void doGet(final HttpExchange httpExchange) throws IOException {
         logger.debug("GET request {}", httpExchange.getRequestURI().getPath());
         queryParametersOnly(httpExchange, requestMappingsGet);
     }
 
 
-    protected void doDelete(final HttpExchange httpExchange) throws IOException {
+    private void doDelete(final HttpExchange httpExchange) throws IOException {
         logger.debug("DELETE request {}", httpExchange.getRequestURI().getPath());
         queryParametersOnly(httpExchange, requestMappingsDelete);
     }
 
 
-    protected void doPost(final HttpExchange httpExchange) throws IOException {
+    private void doPost(final HttpExchange httpExchange) throws IOException {
         logger.debug("POST request {}", httpExchange.getRequestURI().getPath());
         withJsonRequestBody(httpExchange, requestMappingsPost);
     }
 
 
-    protected void doPut(final HttpExchange httpExchange) throws IOException {
+    private void doPut(final HttpExchange httpExchange) throws IOException {
         logger.debug("PUT request {}", httpExchange.getRequestURI().getPath());
         withJsonRequestBody(httpExchange, requestMappingsPut);
     }

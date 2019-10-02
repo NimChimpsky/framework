@@ -112,7 +112,7 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
                     return (String) method.invoke(controller, parameters);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     logger.info("parameters {}", mapToCsv(parameters));
-                    logger.error("Exception processing get request mapping", e);
+                    logger.error("Exception processing query string mapping", e);
                     return e.getMessage();
                 }
             }
@@ -128,7 +128,7 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     logger.info("parameters {}", mapToCsv(parameters));
                     logger.info("request body {}", requestBody);
-                    logger.error("Exception processing post request", e);
+                    logger.error("Exception processing request body and query string mapping", e);
                     return e.getMessage();
                 }
 
