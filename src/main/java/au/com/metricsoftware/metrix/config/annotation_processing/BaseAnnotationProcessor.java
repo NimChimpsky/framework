@@ -22,26 +22,26 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
         this.dependencyProvider = dependencyProvider;
     }
 
-    protected boolean validReturnType(Method method) throws AnnotationProcessingException {
+    protected boolean validReturnType(Method method) {
         if (method.getReturnType().equals(String.class)) {
             return true;
         } else {
             String className = method.getDeclaringClass().getSimpleName();
             String methodName = method.getName();
-            throw new AnnotationProcessingException(className + "." + methodName + " should return String");
+            throw new IllegalArgumentException(className + "." + methodName + " should return String");
         }
     }
 
-    protected boolean validMethod(Method method, int count, List<Class> expectedParameters) throws AnnotationProcessingException {
+    protected boolean validMethod(Method method, int count, List<Class> expectedParameters) {
         String className = method.getDeclaringClass().getSimpleName();
         String methodName = method.getName();
         if (method.getParameterCount() != count) {
-            throw new AnnotationProcessingException("Wrong number of arguments for " + className + "." + methodName + ", should be " + count);
+            throw new IllegalArgumentException("Wrong number of arguments for " + className + "." + methodName + ", should be " + count);
         }
         Class<?>[] parameterType = method.getParameterTypes();
         for (int i = 0; i < expectedParameters.size(); i++) {
             if (!parameterType[i].equals(expectedParameters.get(i))) {
-                throw new AnnotationProcessingException("Wrong arguments type for " + className + "." + methodName + ",expected " + expectedParameters
+                throw new IllegalArgumentException("Wrong arguments type for " + className + "." + methodName + ",expected " + expectedParameters
                         .get(i));
             }
         }
@@ -56,7 +56,7 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
                 Function<Map<String, String>, String> function = createQueryStringFunction(method, controller);
                 return function;
             }
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             logger.error("Exception scanning request mappings", e);
 
         }
@@ -71,7 +71,7 @@ public abstract class BaseAnnotationProcessor implements Consumer<Method> {
                 return function;
             }
 
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | AnnotationProcessingException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             logger.error("Exception scanning request mappings", e);
         }
         return null;// will result in 404

@@ -4,7 +4,7 @@ Open source framework for building json serving web api's, all under 1mb (yes le
 
 Quick start : [See sample project](https://github.com/NimChimpsky/metrix-sample)
 
-Import the metrix jar, create an Index.hmtl, define your controllers, build an instance of MetrixServer class, run ! 
+Import the metrix jar, create an Index.hmtl, define your controllers, build an instance of MetrixServer class and run. 
 
 Supports a static js frontend that accesses a json api.  The api is defined using _@Get_,_@Post_,_@Put_ _@Delete_ and _@Controller_ annotations, like spring and jax but without the baggage.
 
@@ -28,7 +28,8 @@ I only need 5 annotations and constructor injection - so here we are :
 - Logging and json serialization. 
 - **Nothing else what-so-ever**.
 
-Your fat jars, that you can run as a service will be less than 1mb, and breath out
+Your fat jars, that you can run as a service will be less than 1mb.
+
 `https://twitter.com/@Stephen_Batty`
 
 

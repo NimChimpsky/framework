@@ -22,7 +22,6 @@ public class ClassPathUtil {
 
         for (ClassInfo routeClassInfo : classInfoList) {
             controllers.add(Class.forName(routeClassInfo.getName()));
-
         }
 
         scanResult.close();
